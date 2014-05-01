@@ -23,6 +23,8 @@ use Scalar::Util qw(looks_like_number);
 
 # List of servers to status
 my @servers = qw(server15 server16 server29);
+# Initialize arrays
+my (@driftD, @confD, @localD, @last_uptimeF, @sys_startsF, @total_timeF, @conf_fileF, @last_btimeF, @first_bootF) = ();
 
 # Directory for the variables
 my $driftD = "/var/lib/tuptime/";
@@ -32,18 +34,30 @@ my $confD = "/etc/tuptime/";
 my $localD = "/usr/share/tuptime/";
 # FILE1 asigned down to /proc/uptime 
 # FILE6 asigned down to /proc/stat 
-# File which store last value read from /proc/uptime
-my $last_uptimeF = $driftD . "lastuptime"; # FILE2
-# File which store the count of system starts 
-my $sys_startsF = $driftD . "sysstarts"; # FILE3
-# File which stores the total amount of time since the program began
-my $total_timeF = $driftD . "totaltime"; # FILE4
-# File which store the configuration of tuptime
-my $conf_fileF = $confD . "tuptime.conf"; # FILE5
-# File which store last value read from /proc/stat  
-my $last_btimeF = $driftD . "lastbtime"; # FILE7
-# File which store first boot date  
-my $first_bootF = $driftD . "firstboot"; # FILE8
+
+
+# For each server, create the path variables for tuptime
+foreach (@servers) {
+	push @driftD, $driftD . $_;
+	push @confD, $confD . $_;
+	push @localD, $localD . $_;
+}
+foreach (@driftD) {
+	# File which store last value read from /proc/uptime
+	push @last_uptimeF, $_ . "/lastuptime"; # FILE2
+	# File which store the count of system starts 
+	push @sys_startsF, $_ . "/sysstarts"; # FILE3
+	# File which stores the total amount of time since the program began
+	push @total_timeF, $_ . "/totaltime"; # FILE4
+	# File which store last value read from /proc/stat  
+	push @last_btimeF, $_ . "/lastbtime"; # FILE7
+	# File which store first boot date  
+	push @first_bootF, $_ . "/firstboot"; # FILE8
+}
+foreach (@confD) {
+	# File which store the configuration of tuptime
+	push @conf_fileF, $_ . "/tuptime.conf"; # FILE5
+}
 # Some varibles used in the program, other in the subroutines
 my ($uptime, $total, $prev_uptime, $prev_btime, $total_starts, $result_total, $temp_total, @param, @uptime_date, $tmp1, $first_boot) = '';
 
