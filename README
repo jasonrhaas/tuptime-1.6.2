@@ -1,0 +1,188 @@
+===============
+==  tuptime  ==
+===============
+
+Report about historical and statistical run time of the system, keeping it between reboots.
+
+Tuptime count:
+
+ * System startups.
+ * Total uptime of the system.
+ * Total uptime of other components.
+ * Medium uptime for the system.
+ * Actual uptime for the system.
+ * Historical time of removed components.
+ * Date and time of last startup.
+
+
+== Version
+-----------------
+ tuptime 1.6.2
+
+
+== Requirements
+-----------------
+ * perl 5.10 - with modules "Time::Duration" and "Scalar::Util"
+
+
+== Install
+------------
+
+Execute all this commands with privileged user (root).
+
+NOTES to RedHat based systems: 
+	Install "perl" and "perl-Time-Duration", "Scalar::Util" pacakge are in the perl core package.
+	For avoid errors in "perl-Time-Duration" package, is not recommended the use of CPAN for install it because it tends to cause problems. This package isn't in the official repositories, but in other yes (like http://packages.sw.be/perl-Time-Duration/).
+# yum install perl perl-Time-Duration
+
+NOTES to Debian based systems: 
+	Install the perl modules from CPAN or with the debian package manager:
+		 "Time::Duration" is in libtime-duration-perl package.
+		 "Scalar::Util" is in the perl package core.
+# apt-get install perl libtime-duration-perl 
+
+Copy the tuptime file in /usr/bin/ and give it execution permission:
+# cp tuptime.pl /usr/bin/tuptime
+# chmod 755 /usr/bin/tuptime
+
+Execute it with the -i option for initialize the files and with -u for update the files:
+# /usr/bin/tuptime -i -u
+
+Copy the init.d script (Debian or RedHat) for update the counters each time the system starts, restart or stop:
+In Debian based systems:
+# cp tuptime.init.d-debian /etc/init.d/tuptime
+( if you run an old version of debian: # cp tuptime.init.d-debian6 /etc/init.d/tuptime)
+# chmod 755 /etc/init.d/tuptime
+# update-rc.d tuptime defaults
+
+In RedHat based systems:
+# cp tuptime.init.d-redhat /etc/rc.d/init.d/tuptime
+# chmod 755 /etc/rc.d/init.d/tuptime
+# chkconfig --add tuptime
+
+Execute this command  (with root user) for create a file in /etc/cron.d/ for automatically update and save the counter time every five minutes, it is only a safety measure in case of the system had a problem and it can't execute the init script:
+# echo -e "# /etc/cron.d/tuptime: crontab entry for tuptime update. \n\nMAILTO=root\n\n*/5 *    * * *   root    if [ -x /usr/bin/tuptime ]; then /usr/bin/tuptime -u > /dev/null ; fi" > /etc/cron.d/tuptime
+
+If you don't want to put the init script, tuptime can work with the previous cron entry, but is less accurate.
+It is possible to define a different range time in the cron entry if you want.
+
+
+== Update
+--------------
+
+Replace only the /usr/bin/tuptime file.
+# cp /route/to/new/tuptime.pl /usr/bin/tuptime
+
+Initialize the files and update:
+# tuptime -i -u
+
+If you upgrade from a version previous 1.5, change the name of the files:
+# cp /var/lib/tuptime/uptimes /var/lib/tuptime/lastuptime
+# cp /var/lib/tuptime/starts /var/lib/tuptime/sysstarts
+# cp /var/lib/tuptime/times /var/lib/tuptime/totaltime
+
+
+== Uninstall
+--------------
+
+Remove the init files and links:
+In Debian based systems:
+# rm /etc/init.d/tuptime
+# update-rc.d tuptime remove
+
+In RedHat based systems:
+# chkconfig --del tuptime
+# rm /etc/rc.d/init.d/tuptime
+
+Remove the complete directory:
+# rm -rf /var/lib/tuptime
+# rm -rf /etc/tuptime
+
+Remove the crontab file:
+# rm /etc/cron.d/tuptime
+
+Remove the script:
+# rm /usr/bin/tuptime
+
+
+== Using tuptime
+------------------
+
+Print values in human readable format, any user can do it:
+# tuptime
+or:
+# tuptime -p
+or, value only in minutes:
+# tuptime -m
+
+Update and save to disk the counter time values, only root user:
+# tuptime -u
+
+Configure your preferred values in the configuration file (/etc/tuptime/tuptime.conf), one per line, like next example. All of them have the same time value:
+System
+Monitor
+Mouse
+
+You can add a time value in minutes that decrease or increase the final time, like this:
+System
+Monitor:+52630
+Mouse:-1526
+
+If you add hardware in a running system, you can use (tuptime -m) to read the time in minutes that the system has been running and put the difference time with the new component, like this example:
+# tuptime -m
+System Time:	1931 minutes
+
+And now add it to the correspond entry in the /etc/tuptime/tuptime.conf file:
+NewHardWare:-1931
+
+If you put a used hardware, you can add time to it, like the example:
+I have and old piece of hardware with 3 years of use (more or less), then, 3 years are 1577844 minutes.
+1577844 minutes from used hardware - 1931 minutes from system = value to put) like this:
+UsedHardware:+1575913
+
+If you remove hardware and want a historically print of how many time was running, you can add this special line:
+ReplacedHardware:12345:RM
+
+The special line ends with ':RM' wich indicates that this is a ReMoved hardware. Tuptime will print the name and the time, but not increase or decrease it, simply print the value. For set the value, simply print the time in minutes when you remove the hardware, like this:
+# tuptime -m
+OldHardware:	52368 minutes
+
+And add to the conf file with the ':RM' end, like this:
+OldHardware:52368:RM
+
+The next time that you run tuptime, the output will be something similar (and a few time ago, the same too):
+OldHardware Time:       36 days, 8 hours, and 48 minutes
+
+The program always print the system starts count, the estimated uptime between starts and the actual uptime for additional info:
+System Starts, is the count of system starts.
+Uptime Date, is the date when the system started the last time.
+Medium Uptime, is the medium uptime between system starts (total time between system starts).
+Actual Uptime, is the actual uptime for the system.
+ 
+Sample output:
+
+$ tuptime
+System startups:	1   since   09:31:19   17-Jan-2012
+Average uptime:		3 hours, 36 minutes, and 56 seconds
+Current uptime:		3 hours, 36 minutes, and 56 seconds   since   09:31:19   17-Jan-2012
+Uptime rate:		100.0000 % 
+System time:		3 hours, 36 minutes, and 56 seconds
+
+
+== Options
+------------
+
+Usage: tuptime [OPTION...]
+
+# tuptime -i		Initialize the files which uses.
+# tuptime -p		Print the values in human readable style.
+# tuptime 		Print the values in human readable style.
+# tuptime -m		Print the values in minutes.
+# tuptime -u	 	Update and save the values to disk.
+# tuptime -h		Display this help.
+# tuptime -V	 	Version information.
+
+
+== Contributors
+-----------------
+  * Ricardo F <rikr_@hotmail.com> - 2013

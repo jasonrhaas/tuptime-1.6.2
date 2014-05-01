@@ -1,0 +1,64 @@
+tuptime (1.6.2)
+
+  * New init script for debian 7 wheezy
+
+ -- Ricardo F. <rikr_@hotmail.com>  Thu, 14 May 2013 10:00:00 -0400
+
+tuptime (1.6.0)
+
+  * Remove usage of syslog for more quick output.
+  * Change output.
+  * Print rate in output.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Thu, 17 Jan 2012 10:00:00 -0400
+
+tuptime (1.5.0)
+
+  * Print estimated uptime between starts.
+  * Print actual uptime for the system.
+  * Fix and improve code, remove repetitive lines and minnor bugs.
+  * Check if the variable in the conf file is a number.
+  * Start using Scalar::Util module.
+  * Print system uptime date.
+  * Fix bug in first update.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Thu, 10 Oct 2011 10:00:00 -0400
+
+tuptime (1.4.0) 
+
+  * Print time more accurate.
+  * Cron line change to 5 minutes.
+  * Print time values in live time without update.
+  * Alert incorrect user permissions when update count files.
+  * Alert incorrect user permissions when initialize files.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Sat, 06 Aug 2011 10:00:00 -0400
+
+tuptime (1.3.0)
+
+  * Jump blank lines in conf file.
+  * Adding #REPLACEAT feature.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Mon, 20 Jun 2011 10:00:00 -0400
+
+tuptime (1.2.0)
+
+  * Change speak option to verbose.
+  * Fix lost information in files when update.
+  * Minnor corrections in text strings.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Mon, 13 Jun 2011 10:00:00 -0400
+
+tuptime (1.1.0)
+
+  * Any user can print the times, not only root.
+  * Minnor changes to speak option.
+  * Minnor corrections.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Fri, 10 Jun 2011 10:00:00 -0400
+
+tuptime (1.0.0)
+
+  * First release.
+
+ -- Ricardo F. <rikr_@hotmail.com>  Wed, 23 March 2011 10:02:18 -0400
