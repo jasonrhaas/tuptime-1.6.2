@@ -170,35 +170,39 @@ sub i {
         }
 
         # Cheking the $first_bootF
-        if (-e "$first_bootF" ) {
-                printf ("Exists: " . $first_bootF . " - Testing if is ok.\n");
+        foreach my $first_bootF (@first_bootF) {
+            if (-e "$first_bootF" ) {
+                    printf ("Exists: " . $first_bootF . " - Testing if is ok.\n");
 
-		# Get first boot date
-	        open(FILE8,"< $first_bootF") || return 1;
-        	$first_boot = <FILE8>;
-	        close FILE8 || return 1;
-		# If is empty, write the date
-		if ($first_boot == 0) {
-			# Go to the following else condition
-			goto date_write;
-		}
-		
-        } else {
-		
-		date_write:
-		# Read date and write
-		open(FILE6, "< /proc/stat") || return 1;
-	        ($tmp1) = grep( { m/btime/ } <FILE6>);
-        	close FILE6 || return 1;
-		@uptime_date = split (' ', $tmp1, 2);
-		
-                printf ("Not exists: ". $first_bootF . " - Making!\n");
-                open(FILE8,"> $first_bootF") || return 1;
-                print FILE8 "$uptime_date[1]";
-                close FILE8 || return 1;
-        	my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
-	        my ($sec, $min, $hour, $day,$month,$year) = (localtime($uptime_date[1]))[0,1,2,3,4,5,6];
-        	printf ("Saved first boot date: \t%02s:%02s:%02s   %02s-$months[$month]-%04s\n", $hour, $min, $sec, $day, ($year+1900));
+    		# Get first boot date
+    	        open(FILE8,"< $first_bootF") || return 1;
+            	$first_boot = <FILE8>;
+    	        close FILE8 || return 1;
+    		# If is empty, write the date
+    		if ($first_boot == 0) {
+    			# Go to the following else condition
+    			goto date_write;
+    		}
+    		
+            } else {
+    		
+    		date_write:
+    		# Read date and write
+            foreach my $localD (@localD) {
+        		open(FILE6, "< $localD") || return 1;
+        	        ($tmp1) = grep( { m/btime/ } <FILE6>);
+                	close FILE6 || return 1;
+        		@uptime_date = split (' ', $tmp1, 2);
+        		
+                        printf ("Not exists: ". $first_bootF . " - Making!\n");
+                        open(FILE8,"> $first_bootF") || return 1;
+                        print FILE8 "$uptime_date[1]";
+                        close FILE8 || return 1;
+                	my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+        	        my ($sec, $min, $hour, $day,$month,$year) = (localtime($uptime_date[1]))[0,1,2,3,4,5,6];
+                	printf ("Saved first boot date: \t%02s:%02s:%02s   %02s-$months[$month]-%04s\n", $hour, $min, $sec, $day, ($year+1900));
+                }
+            }
         }
 
 return 0;
