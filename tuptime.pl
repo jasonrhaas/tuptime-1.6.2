@@ -134,7 +134,7 @@ sub i {
         }
 
         # Checking directories
-        foreach ($driftD, $confD)
+        foreach (@driftD, @confD)
         {
                 if (-d "$_") {
                         printf("Exists: " . $_ . " - Don't do anything.\n");
@@ -145,7 +145,7 @@ sub i {
         }
 
 	# Checking files
-	foreach ($last_uptimeF, $last_btimeF, $total_timeF, $sys_startsF)
+	foreach (@last_uptimeF, @last_btimeF, @total_timeF, @sys_startsF)
 	{
 		if (-e "$_" ) {
          	       printf ("Exists: " . $_ . " - Don't do anything.\n");
@@ -158,13 +158,15 @@ sub i {
 	}
 
         # Cheking the $conf_fileF
-        if (-e "$conf_fileF" ) {
-                printf ("Exists: " . $conf_fileF . " - Don't do anything.\n");
-        } else {
-                printf ("Not exists: ". $conf_fileF . " - Making!\n");
-                open(FILE5,"> $conf_fileF") || return 1;
-                print FILE5 "# tuptime configuration file\n# Usage: \n# Name:+MoreTime (in minutes)\n# or\n# Name:-LessTime (in minutes)\n# \n# Keep historical time in removed hardware:\n# Name:+Time:RM (Time = total time in minutes when the hardware was removered)\n# \nSystem:+0\n";
-                close FILE5 || return 1;
+        foreach (@conf_fileF) {
+	        if (-e "$_" ) {
+	                printf ("Exists: " . $_ . " - Don't do anything.\n");
+	        } else {
+	                printf ("Not exists: ". $_ . " - Making!\n");
+	                open(FILE5,"> $_") || return 1;
+	                print FILE5 "# tuptime configuration file\n# Usage: \n# Name:+MoreTime (in minutes)\n# or\n# Name:-LessTime (in minutes)\n# \n# Keep historical time in removed hardware:\n# Name:+Time:RM (Time = total time in minutes when the hardware was removered)\n# \nSystem:+0\n";
+	                close FILE5 || return 1;
+	        }
         }
 
         # Cheking the $first_bootF
