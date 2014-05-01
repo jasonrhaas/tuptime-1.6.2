@@ -21,10 +21,15 @@ use Time::Duration;
 use Scalar::Util qw(looks_like_number);
 #use diagnostics;
 
+# List of servers to status
+my @servers = qw(server15 server16 server29);
+
 # Directory for the variables
 my $driftD = "/var/lib/tuptime/";
 # Directory for the configuration file
 my $confD = "/etc/tuptime/";
+# Directory for stored uptime and stat files from remote servers
+my $localD = "/usr/share/tuptime/";
 # FILE1 asigned down to /proc/uptime 
 # FILE6 asigned down to /proc/stat 
 # File which store last value read from /proc/uptime
