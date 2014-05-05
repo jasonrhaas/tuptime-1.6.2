@@ -44,19 +44,19 @@ foreach (@servers) {
 	push @localD, $localD . $_;
 }
 foreach (@driftD) {
-	# File which store last value read from /proc/uptime
+	# File which stores the last value read from /proc/uptime
 	push @last_uptimeF, $_ . "/lastuptime"; # FILE2
-	# File which store the count of system starts 
+	# File which stores the count of system starts 
 	push @sys_startsF, $_ . "/sysstarts"; # FILE3
 	# File which stores the total amount of time since the program began
 	push @total_timeF, $_ . "/totaltime"; # FILE4
-	# File which store last value read from /proc/stat  
+	# File which stores the last value read from /proc/stat  
 	push @last_btimeF, $_ . "/lastbtime"; # FILE7
-	# File which store first boot date  
+	# File which stores the first boot date  
 	push @first_bootF, $_ . "/firstboot"; # FILE8
 }
 foreach (@confD) {
-	# File which store the configuration of tuptime
+	# File which stores the configuration of tuptime
 	push @conf_fileF, $_ . "/tuptime.conf"; # FILE5
 }
 # Some varibles used in the program, other in the subroutines
@@ -215,7 +215,7 @@ return 0;
 ##########
 sub u {
 
-        ## Check if the computer is restarted
+        ## Check if the computer has restarted
 
         # Checking permissions
         foreach (@driftD){
@@ -228,14 +228,14 @@ sub u {
             }
         }
 
-        # Read actual uptime value from system
+        # Read actual uptime value from the uptime time
         foreach (@localD) {
             open(FILE1, "< $_\/uptime") || return 1;
             ($uptime) = split (/\s+/, <FILE1>, -1);
             close FILE1 || return 1;
         }
 
-        # Read last read time from /proc/uptime save in the $last_uptimeF file
+        # Read last uptime file and save value in $prev_uptime
         open(FILE2, "< $last_uptimeF") || return 1;
         $prev_uptime = <FILE2>;
         close FILE2 || return 1;
@@ -246,20 +246,20 @@ sub u {
         close FILE2 || return 1;
         
 
-	# Read actual boot time from /proc/stat
+	# Read actual boot date from /proc/stat
 	open(FILE6, "< /proc/stat") || return 1;
         ($tmp1) = grep( { m/btime/ } <FILE6>);
         close FILE6 || return 1;
 	@uptime_date = split (' ', $tmp1, 2);
 	chomp($uptime_date[1]);
 
-	# Read last time from /proc/uptime save in the $last_btimeF file
+	# Read the last boot time from the $last_btime file and save in $prev_btime variable
         open(FILE7, "< $last_btimeF") || return 1;
         $prev_btime = <FILE7>;
         close FILE7 || return 1;
 	chomp($prev_btime);
 
-        # If the last read time is more than the actual system uptime...
+        # If the previous boot date is less than the current boot date...
         if ($prev_btime < $uptime_date[1]) {
                 # ...the system is restarted, so, actualize the $last_btimeF
                 open(FILE7, "> $last_btimeF") || return 1;
@@ -282,8 +282,8 @@ sub u {
         } else {
         }
 
-        # Get the differente between the $uptime and $prev_uptime...
-        # ...the result is the time elapsed in secods since the last tuptime files update.
+        # Get the difference between the $uptime and $prev_uptime...
+        # ...the result is the time elapsed in seconds since the last tuptime files update.
         $total = $uptime - $prev_uptime;
         
         # Open the file which stores the total amount of time since the program began for read the value
@@ -291,7 +291,7 @@ sub u {
         $temp_total = <FILE4>;
         close FILE4 || return 1;
 
-        # Get the sum between the value that have the file and the time elapsed in secods since the last update.
+        # Get the sum between the value that have the file and the time elapsed in seconds since the last update.
         $temp_total += $total;
         
         # Save the new value of the time elapsed in the file
