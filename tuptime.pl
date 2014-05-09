@@ -235,74 +235,74 @@ sub u {
             close FILE1 || return 1;
         }
 
-        # Read last uptime file and save value in $prev_uptime
-        open(FILE2, "< $last_uptimeF") || return 1;
-        $prev_uptime = <FILE2>;
-        close FILE2 || return 1;
+#         # Read last uptime file and save value in $prev_uptime
+#         open(FILE2, "< $last_uptimeF") || return 1;
+#         $prev_uptime = <FILE2>;
+#         close FILE2 || return 1;
 
-        # Save the actual system uptime in the file for the following check
-        open(FILE2,"> $last_uptimeF") || return 1;
-        print FILE2 $uptime;
-        close FILE2 || return 1;
+#         # Save the actual system uptime in the file for the following check
+#         open(FILE2,"> $last_uptimeF") || return 1;
+#         print FILE2 $uptime;
+#         close FILE2 || return 1;
         
 
-	# Read actual boot date from /proc/stat
-	open(FILE6, "< /proc/stat") || return 1;
-        ($tmp1) = grep( { m/btime/ } <FILE6>);
-        close FILE6 || return 1;
-	@uptime_date = split (' ', $tmp1, 2);
-	chomp($uptime_date[1]);
+# 	# Read actual boot date from /proc/stat
+# 	open(FILE6, "< /proc/stat") || return 1;
+#         ($tmp1) = grep( { m/btime/ } <FILE6>);
+#         close FILE6 || return 1;
+# 	@uptime_date = split (' ', $tmp1, 2);
+# 	chomp($uptime_date[1]);
 
-	# Read the last boot time from the $last_btime file and save in $prev_btime variable
-        open(FILE7, "< $last_btimeF") || return 1;
-        $prev_btime = <FILE7>;
-        close FILE7 || return 1;
-	chomp($prev_btime);
+# 	# Read the last boot time from the $last_btime file and save in $prev_btime variable
+#         open(FILE7, "< $last_btimeF") || return 1;
+#         $prev_btime = <FILE7>;
+#         close FILE7 || return 1;
+# 	chomp($prev_btime);
 
-        # If the previous boot date is less than the current boot date...
-        if ($prev_btime < $uptime_date[1]) {
-                # ...the system is restarted, so, actualize the $last_btimeF
-                open(FILE7, "> $last_btimeF") || return 1;
-                print FILE7 $uptime_date[1];
-                close FILE7 || return 1;
+#         # If the previous boot date is less than the current boot date...
+#         if ($prev_btime < $uptime_date[1]) {
+#                 # ...the system is restarted, so, actualize the $last_btimeF
+#                 open(FILE7, "> $last_btimeF") || return 1;
+#                 print FILE7 $uptime_date[1];
+#                 close FILE7 || return 1;
 
-		# so, previous uptime is 0 value
-		$prev_uptime = 0;
+# 		# so, previous uptime is 0 value
+# 		$prev_uptime = 0;
         
-                # and, actualize system starts. Read value, increase count, save value
-                open(FILE3,"< $sys_startsF") || return 1;
-                $total_starts = <FILE3>;
-                close FILE3 || return 1;
-                $total_starts ++;
-                open(FILE3,"> $sys_startsF") || return 1;
-                print FILE3 $total_starts;
-                close FILE3 || return 1;
+#                 # and, actualize system starts. Read value, increase count, save value
+#                 open(FILE3,"< $sys_startsF") || return 1;
+#                 $total_starts = <FILE3>;
+#                 close FILE3 || return 1;
+#                 $total_starts ++;
+#                 open(FILE3,"> $sys_startsF") || return 1;
+#                 print FILE3 $total_starts;
+#                 close FILE3 || return 1;
 
-        # ...the system wasn't restarted
-        } else {
-        }
+#         # ...the system wasn't restarted
+#         } else {
+#         }
 
-        # Get the difference between the $uptime and $prev_uptime...
-        # ...the result is the time elapsed in seconds since the last tuptime files update.
-        $total = $uptime - $prev_uptime;
+#         # Get the difference between the $uptime and $prev_uptime...
+#         # ...the result is the time elapsed in seconds since the last tuptime files update.
+#         $total = $uptime - $prev_uptime;
         
-        # Open the file which stores the total amount of time since the program began for read the value
-        open(FILE4,"< $total_timeF") || return 1;
-        $temp_total = <FILE4>;
-        close FILE4 || return 1;
+#         # Open the file which stores the total amount of time since the program began for read the value
+#         open(FILE4,"< $total_timeF") || return 1;
+#         $temp_total = <FILE4>;
+#         close FILE4 || return 1;
 
-        # Get the sum between the value that have the file and the time elapsed in seconds since the last update.
-        $temp_total += $total;
+#         # Get the sum between the value that have the file and the time elapsed in seconds since the last update.
+#         $temp_total += $total;
         
-        # Save the new value of the time elapsed in the file
-        open(FILE4,"> $total_timeF") || return 1;
-        print FILE4 $temp_total;
-        close FILE4 || return 1;
-        # If is update
-        if ($_ =~ 'u'){
-                print ("Updating tuptime.\n");
-        }
-return 0;
+#         # Save the new value of the time elapsed in the file
+#         open(FILE4,"> $total_timeF") || return 1;
+#         print FILE4 $temp_total;
+#         close FILE4 || return 1;
+#         # If is update
+#         if ($_ =~ 'u'){
+#                 print ("Updating tuptime.\n");
+#         }
+# return 0;
 }       
 
 ################
