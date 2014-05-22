@@ -34,19 +34,16 @@ my $confD = "/etc/tuptime/";
 my $localD = "/usr/share/tuptime/";
 
 # List of servers to status
-# my @servers = glob "$localD*";
+# Added ability to read servers from file
+my @servers;
+my $file = 'servers.conf';
+open my $fh, '<', $file or die "Could not open $file: $!\n";
 
-opendir my $dh, $localD or die "Cannot open $localD: $!";
-my @servers = readdir $dh;
-shift @servers;
-shift @servers;
-# print "@servers\n";
-# exit;
-# my $num = @servers;
-# print "$num\n";
-# exit;
-# FILE1 asigned down to /proc/uptime 
-# FILE6 asigned down to /proc/stat 
+while( my $line = <$fh>) {
+        chomp $line;
+        push @servers, $line;
+}
+close $fh;
 
 
 # For each server, create the path variables for tuptime
@@ -162,7 +159,7 @@ sub i {
                 if (-d "$_") {
                         printf("Exists: " . $_ . " - Don't do anything.\n");
                 } else {
-                        printf("Not exists: " . $_ . " - Making! \n");
+                        printf("Doesnt' exist: " . $_ . " - Making! \n");
                         mkpath "$_", 655;
                 }
         }
@@ -173,7 +170,7 @@ sub i {
 		if (-e "$_" ) {
          	       printf ("Exists: " . $_ . " - Don't do anything.\n");
 	        } else {
-        	        printf ("Not exists: ". $_ . " - Making! \n");
+        	        printf ("Doesn't exist: ". $_ . " - Making! \n");
                 	open(FILE,"> $_") || return 1;
 	                print FILE 0;
         	        close FILE || return 1;
@@ -185,7 +182,7 @@ sub i {
 	        if (-e "$_" ) {
 	                printf ("Exists: " . $_ . " - Don't do anything.\n");
 	        } else {
-	                printf ("Not exists: ". $_ . " - Making!\n");
+	                printf ("Doesn't exist: ". $_ . " - Making!\n");
 	                open(FILE5,"> $_") || return 1;
 	                print FILE5 "# tuptime configuration file\n# Usage: \n# Name:+MoreTime (in minutes)\n# or\n# Name:-LessTime (in minutes)\n# \n# Keep historical time in removed hardware:\n# Name:+Time:RM (Time = total time in minutes when the hardware was removered)\n# \nSystem:+0\n";
 	                close FILE5 || return 1;
@@ -193,6 +190,7 @@ sub i {
         }
 
         # Cheking the $first_bootF
+        my $count = 0;
         foreach my $first_bootF (@first_bootF) {
             if (-e "$first_bootF" ) {
                     printf ("Exists: " . $first_bootF . " - Testing if is ok.\n");
@@ -212,21 +210,20 @@ sub i {
     		
     		date_write:
     		# Read date and write
-            foreach my $localD (@localD) {
-        		open(FILE6, "< $localD\/stat") || return 1;
-        	        ($tmp1) = grep( { m/btime/ } <FILE6>);
-                	close FILE6 || return 1;
-        		@boot_time = split (' ', $tmp1, 2);
-        		
-                        printf ("Not exists: ". $first_bootF . " - Making!\n");
-                        open(FILE8,"> $first_bootF") || return 1;
-                        print FILE8 "$boot_time[1]";
-                        close FILE8 || return 1;
-                	my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
-        	        my ($sec, $min, $hour, $day,$month,$year) = (localtime($boot_time[1]))[0,1,2,3,4,5,6];
-                	printf ("Saved first boot date: \t%02s:%02s:%02s   %02s-$months[$month]-%04s\n", $hour, $min, $sec, $day, ($year+1900));
-                }
+		open(FILE6, "< $localD[$count]\/stat") || return 1;
+	        ($tmp1) = grep( { m/btime/ } <FILE6>);
+        	close FILE6 || return 1;
+		@boot_time = split (' ', $tmp1, 2);
+		
+                printf ("Doesn't exist: ". $first_bootF . " - Making!\n");
+                open(FILE8,"> $first_bootF") || return 1;
+                print FILE8 "$boot_time[1]";
+                close FILE8 || return 1;
+        	my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+	        my ($sec, $min, $hour, $day,$month,$year) = (localtime($boot_time[1]))[0,1,2,3,4,5,6];
+        	printf ("Saved first boot date: \t%02s:%02s:%02s   %02s-$months[$month]-%04s\n", $hour, $min, $sec, $day, ($year+1900));
             }
+            $count++;
         }
 
 return 0;
