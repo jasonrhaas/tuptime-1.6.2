@@ -22,8 +22,7 @@ use Time::Duration;
 use Scalar::Util qw(looks_like_number);
 #use diagnostics;
 
-# List of servers to status
-my @servers = qw(ubuntu ubuntu2);
+
 # Initialize arrays
 my (@driftD, @confD, @localD, @last_uptimeF, @sys_startsF, @total_timeF, @conf_fileF, @last_btimeF, @first_bootF) = ();
 
@@ -33,6 +32,19 @@ my $driftD = "/var/tuptime/";
 my $confD = "/etc/tuptime/";
 # Directory for stored uptime and stat files from remote servers
 my $localD = "/usr/share/tuptime/";
+
+# List of servers to status
+# my @servers = glob "$localD*";
+
+opendir my $dh, $localD or die "Cannot open $localD: $!";
+my @servers = readdir $dh;
+shift @servers;
+shift @servers;
+# print "@servers\n";
+# exit;
+# my $num = @servers;
+# print "$num\n";
+# exit;
 # FILE1 asigned down to /proc/uptime 
 # FILE6 asigned down to /proc/stat 
 
